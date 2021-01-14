@@ -1,0 +1,74 @@
+<head>
+</head>
+<body>
+    <div class="form-example">
+        {%  if arraybolas is defined %}
+            {% for num in arraybolas  %}
+                Ball number {{ num }} -
+            {% endfor %}
+        {%  endif %}
+        <br><br>
+
+        <input type="text" id="txtSacarBola">
+        <button id="enviar">Enviar</button>
+        <div>
+            <label> Write which ball number want to pichk out of the bag (default/random 0) </label>
+        </div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+</body>
+
+<script>
+    $(document).ready(function (){
+        console.log("log");
+        var $campoBola = $('#txtSacarBola');
+
+        function compruebaNumero(n){
+            if (n.length == 0){
+                return false;
+            }
+            if (isNaN(n) || parseInt(n) == 'undefined'){
+                return false;
+            }
+            if (parseInt(n) < 0 || parseInt(n) > 100){
+                return false;
+            }
+            return true;
+        };
+
+        $('#enviar').click(function (){
+
+            if ($campoBola !== 'undefined' && !compruebaNumero($campoBola.val()) ){
+                alert('Write a number between 1 and 100.');
+            }else{
+
+                $.ajax({
+                    type: 'post',
+                    url: '{{ path('askBall') }}',
+                    data: {
+                        val: $campoBola.val()
+                    },
+                    success: function(data) {
+                        console.log(data);
+                        imprimeResultado(data);
+                    },
+                    error: function() {
+                        alert('Error occured');
+                    }
+                });
+            }
+
+        });
+        function imprimeResultado(data){
+            var bolaCandidata = data.bolacandidata;
+            console.log(bolaCandidata);
+            var bolaGanadora = data.bolaGanadora;
+            console.log(bolaGanadora);
+            var res = (data.ordenExtraccionBolas);
+            jQuery.each(res, function(index, value){
+                console.log(value);
+            });
+        };
+
+    });
+</script>
